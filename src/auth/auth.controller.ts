@@ -49,9 +49,9 @@ export class AuthController {
     description: 'Unauthorized. Invalid refresh token.',
   })
   async refresh(@Body() body: RefreshTokenDto) {
-    const { accessToken } = await this.authService.refreshToken(
+    const { accessToken, refreshToken } = await this.authService.refreshToken(
       body.refreshToken,
     );
-    return { accessToken };
+    return { accessToken, refreshToken };
   }
 }

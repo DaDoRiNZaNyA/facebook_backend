@@ -21,4 +21,16 @@ model User {
   lastName  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  posts     Post[]   @relation("UserPosts")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  text      String
+  media     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation("UserPosts", fields: [userId], references: [id])
 }

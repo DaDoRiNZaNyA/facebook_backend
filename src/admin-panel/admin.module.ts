@@ -8,8 +8,9 @@ export const AdminModule = (async () => {
   const AdminJS = (await import('adminjs')).default;
   AdminJS.registerAdapter({ Database, Resource });
   const { ComponentLoader } = await import('adminjs');
-  const loader = new ComponentLoader();
 
+  const loader = new ComponentLoader();
+  const prismaService = new PrismaService();
   const Components = {
     Dashboard: loader.add('Dashboard', './components/dashboard.tsx'),
   };
@@ -22,7 +23,38 @@ export const AdminModule = (async () => {
           {
             resource: {
               model: getModelByName('User'),
-              client: new PrismaService(),
+              client: prismaService,
+            },
+            options: {
+              properties: {
+                password: {
+                  isVisible: {
+                    list: false,
+                    show: false,
+                    edit: false,
+                    filter: false,
+                  },
+                },
+                posts: {
+                  components: {
+                    show: loader.add(
+                      'UserPostsList',
+                      './components/UserPostsList.tsx',
+                    ),
+                  },
+                },
+              },
+              actions: {
+                new: {
+                  isVisible: false,
+                },
+              },
+            },
+          },
+          {
+            resource: {
+              model: getModelByName('Post'),
+              client: prismaService,
             },
             options: {
               properties: {
