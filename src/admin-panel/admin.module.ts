@@ -1,0 +1,57 @@
+import { PrismaService } from 'src/prisma.service';
+
+export const AdminModule = (async () => {
+  const { AdminModule } = await import('@adminjs/nestjs');
+  const { Database, Resource, getModelByName } = await import(
+    '@adminjs/prisma'
+  );
+  const AdminJS = (await import('adminjs')).default;
+  AdminJS.registerAdapter({ Database, Resource });
+  const { ComponentLoader } = await import('adminjs');
+  const loader = new ComponentLoader();
+
+  const Components = {
+    Dashboard: loader.add('Dashboard', './components/dashboard.tsx'),
+  };
+
+  return AdminModule.createAdminAsync({
+    useFactory: () => ({
+      adminJsOptions: {
+        rootPath: '/admin',
+        resources: [
+          {
+            resource: {
+              model: getModelByName('User'),
+              client: new PrismaService(),
+            },
+            options: {
+              properties: {
+                password: {
+                  isVisible: {
+                    list: false,
+                    show: false,
+                    edit: false,
+                    filter: false,
+                  },
+                },
+              },
+              actions: {
+                new: {
+                  isVisible: false,
+                },
+              },
+            },
+          },
+        ],
+        branding: {
+          companyName: 'My Company',
+          softwareBrothers: false,
+        },
+        componentLoader: loader,
+        dashboard: {
+          component: Components.Dashboard,
+        },
+      },
+    }),
+  });
+})();
