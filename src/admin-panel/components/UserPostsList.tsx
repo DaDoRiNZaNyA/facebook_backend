@@ -1,18 +1,32 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import {
+  Table,
+  TableRow,
+  TableCell,
+  TableCaption,
+  TableHead,
+  TableBody,
+  Pagination,
+  Text,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore
+} from '@adminjs/design-system';
 
 const UserPostsList: React.FC<any> = (props) => {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState<any[]>([]);
-  const [Table, setTable] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [postsPage, setPostsPage] = useState<number>(1);
 
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          `/admin/api/resources/Post/actions/list/?page=1&filter.user=${props.record.params.id}/records`,
+          `/admin/api/resources/Post/actions/list/?page=${postsPage}&filter.user=${props.record.params.id}/records`,
         );
         setPosts(response.data.records);
       } catch (error) {
@@ -24,42 +38,50 @@ const UserPostsList: React.FC<any> = (props) => {
     };
 
     fetchPosts();
-  }, [props.record.params.id]);
-
-  useEffect(() => {
-    const loadTable = async () => {
-      try {
-        const module = await import('@adminjs/design-system');
-        setTable(() => module.Table);
-      } catch (error) {
-        console.error('Error loading Table component:', error);
-        setError('Error loading Table component.');
-      }
-    };
-
-    loadTable();
-  }, []);
+  }, [props.record.params.id, postsPage]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
-  if (!Table) return <p>Loading Table component...</p>;
 
   return (
-    <div>
-      <Table
-        columns={[
-          { Header: 'Post ID', accessor: 'id' },
-          { Header: 'Text', accessor: 'text' },
-          { Header: 'Media', accessor: 'media' },
-          { Header: 'Created At', accessor: 'createdAt' },
-        ]}
-        data={posts.map((post) => ({
-          id: post.params.id,
-          text: post.params.text,
-          media: post.params.media,
-          createdAt: new Date(post.params.createdAt).toLocaleString(),
-        }))}
-      />
+    <div style={{ paddingTop: 20 }}>
+      <Table>
+        <TableCaption>Список постов</TableCaption>
+        <TableHead>
+          <TableRow>
+            <TableCell>Post ID</TableCell>
+            <TableCell>Text</TableCell>
+            <TableCell>Media</TableCell>
+            <TableCell>Created At</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {posts.map((post) => (
+            <TableRow
+              key={post.id}
+              style={{ cursor: 'pointer' }}
+              onClick={() =>
+                navigate(`/admin/resources/Post/records/${post.id}/show`)
+              }
+            >
+              <TableCell>{post.params.id}</TableCell>
+              <TableCell>{post.params.text}</TableCell>
+              <TableCell>{post.params.media}</TableCell>
+              <TableCell>
+                {new Date(post.params.createdAt).toLocaleString()}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Text py="xl" textAlign="center">
+        <Pagination
+          page={postsPage}
+          onChange={(value) => setPostsPage(value)}
+          total={11}
+          perPage={10}
+        />
+      </Text>
     </div>
   );
 };

@@ -42,6 +42,7 @@ export const AdminModule = (async () => {
                       './components/UserPostsList.tsx',
                     ),
                   },
+                  position: 110,
                 },
               },
               actions: {
