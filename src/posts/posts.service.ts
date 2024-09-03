@@ -68,6 +68,7 @@ export class PostsService {
           updatedAt: true,
           user: {
             select: {
+              id: true,
               name: true,
               lastName: true,
             },
@@ -88,6 +89,20 @@ export class PostsService {
   async findOne(id: number) {
     return this.prisma.post.findUnique({
       where: { id },
+      select: {
+        id: true,
+        text: true,
+        media: true,
+        createdAt: true,
+        updatedAt: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            lastName: true,
+          },
+        },
+      },
     });
   }
 }
