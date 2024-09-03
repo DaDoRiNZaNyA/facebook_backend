@@ -19,17 +19,9 @@ export class PaginationResponseDto<T> {
   };
 
   @ApiProperty({
+    description: 'data',
     type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        id: { type: 'number' },
-        email: { type: 'string' },
-        name: { type: 'string' },
-        lastName: { type: 'string' },
-      },
-    },
+    items: { type: 'object' },
   })
-  @ApiProperty()
   data: T[];
 }

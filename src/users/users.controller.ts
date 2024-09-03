@@ -1,8 +1,16 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Param,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UsersService } from './users.service.js';
-import { PaginationResponseDto } from 'src/utils/pagination-respoonse.dto';
+import { GetUserDto } from './dto/get-user-dto.js';
+import { ApiOkResponsePaginated } from 'src/utils/ApiOkResponsePaginated';
 
 @ApiTags('users')
 @Controller('users')
@@ -11,15 +19,11 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'Get users' })
-  @ApiResponse({
-    status: 200,
-    description: 'List of users with pagination information',
-    type: PaginationResponseDto,
-  })
+  @ApiOkResponsePaginated(GetUserDto)
   findAll(
-    @Query('page') page: number,
-    @Query('size') size: number,
-    @Query('search') search: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('size', new DefaultValuePipe(10), ParseIntPipe) size: number = 10,
+    @Query('search') search: string = '',
   ) {
     return this.usersService.findAll({ page, size, search });
   }

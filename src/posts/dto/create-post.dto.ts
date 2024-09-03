@@ -1,11 +1,21 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreatePostDto {
   @IsNotEmpty()
   @IsString()
+  @ApiProperty({
+    description: 'The text content of the post',
+    example: 'qweqwe',
+  })
   text: string;
 
   @IsOptional()
   @IsString()
-  mediaUrl?: string;
+  @ApiProperty({
+    description: 'The media URL or path',
+    example: '/lisk',
+    nullable: true,
+  })
+  media?: string;
 }

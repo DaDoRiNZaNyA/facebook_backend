@@ -1,17 +1,29 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
+  Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { GetPostDto } from './dto/get-post.dto';
+import { ApiOkResponsePaginated } from 'src/utils/ApiOkResponsePaginated';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -20,9 +32,23 @@ export class PostsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new post' })
+  @ApiBody({
+    description: 'The data needed to create a new post',
+    type: CreatePostDto,
+  })
   @ApiResponse({
     status: 201,
     description: 'Post successfully created',
+    schema: {
+      example: {
+        id: 12,
+        userId: 1,
+        text: 'qweqwe',
+        media: null,
+        createdAt: '2024-09-03T05:17:30.367Z',
+        updatedAt: '2024-09-03T05:17:30.367Z',
+      },
+    },
   })
   @ApiResponse({
     status: 401,
@@ -39,6 +65,16 @@ export class PostsController {
   @ApiResponse({
     status: 200,
     description: 'Post successfully updated',
+    schema: {
+      example: {
+        id: 12,
+        userId: 1,
+        text: 'qweqwe',
+        media: null,
+        createdAt: '2024-09-03T05:17:30.367Z',
+        updatedAt: '2024-09-03T05:17:30.367Z',
+      },
+    },
   })
   @ApiResponse({
     status: 404,
@@ -56,5 +92,29 @@ export class PostsController {
   ) {
     const userId = req.user.id;
     return this.postsService.update(id, updatePostDto, userId);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get posts' })
+  @ApiOkResponsePaginated(GetPostDto)
+  findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('size', new DefaultValuePipe(10), ParseIntPipe) size: number = 10,
+    @Query('search') search: string = '',
+  ) {
+    return this.postsService.findAll({ page, size, search });
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get post by ID' })
+  @ApiParam({ name: 'id', description: 'post ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Пользователь найден.',
+    type: GetPostDto,
+  })
+  @ApiResponse({ status: 404, description: 'Post not found.' })
+  findOne(@Param('id') id: string) {
+    return this.postsService.findOne(+id);
   }
 }

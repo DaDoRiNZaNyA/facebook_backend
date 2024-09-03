@@ -44,7 +44,6 @@ export class UsersService {
 
     const pagination = paginate(total, size, page);
 
-    // Возвращаем результат
     return {
       pagination,
       data: users,
@@ -54,14 +53,6 @@ export class UsersService {
   async findOne(id: number) {
     return this.prisma.user.findUnique({
       where: { id },
-      // select: {
-      //   id: true,
-      //   email: true,
-      //   name: true,
-      //   lastName: true,
-      //   createdAt: true,
-      //   updatedAt: true,
-      // },
     });
   }
 
