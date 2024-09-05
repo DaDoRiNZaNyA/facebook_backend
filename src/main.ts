@@ -14,6 +14,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -21,6 +22,14 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  await app.listen(3000);
+
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Authorization',
+    credentials: true,
+  });
+
+  await app.listen(4000);
 }
 bootstrap();
