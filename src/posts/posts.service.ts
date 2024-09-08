@@ -113,6 +113,7 @@ export class PostsService {
     userId: number;
   }) {
     const { page = 1, size = 10, search = '' } = params;
+
     const where: Prisma.PostWhereInput = {
       AND: [
         { text: { contains: search, mode: 'insensitive' } },

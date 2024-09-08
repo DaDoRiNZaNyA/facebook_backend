@@ -105,7 +105,7 @@ export class PostsController {
     return this.postsService.findAll({ page, size, search });
   }
 
-  @Get(':id')
+  @Get('post/:id')
   @ApiOperation({ summary: 'Get post by ID' })
   @ApiParam({ name: 'id', description: 'post ID' })
   @ApiResponse({
