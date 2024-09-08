@@ -21,6 +21,7 @@ export class UsersService {
         {
           OR: [
             { name: { contains: search, mode: 'insensitive' } },
+            { lastName: { contains: search, mode: 'insensitive' } },
             { email: { contains: search, mode: 'insensitive' } },
           ],
         },
@@ -64,5 +65,23 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User | null> {
     return this.prisma.user.findUnique({ where: { email } });
+  }
+
+  async updateUser({
+    id,
+    name,
+    lastName,
+    email,
+  }: {
+    id: number;
+    name: string;
+    lastName?: string;
+    email: string;
+  }) {
+    console.log({ id, name, lastName, email });
+    return this.prisma.user.update({
+      where: { id },
+      data: { name, lastName, email },
+    });
   }
 }

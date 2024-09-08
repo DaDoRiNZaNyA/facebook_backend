@@ -117,4 +117,18 @@ export class PostsController {
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(+id);
   }
+
+  @Get('my')
+  @ApiOperation({ summary: 'Get my posts' })
+  @ApiOkResponsePaginated(GetPostDto)
+  @UseGuards(JwtAuthGuard)
+  findMyPosts(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('size', new DefaultValuePipe(10), ParseIntPipe) size: number = 10,
+    @Query('search') search: string = '',
+    @Req() req,
+  ) {
+    const userId = req.user.id;
+    return this.postsService.findByUser({ page, size, search, userId });
+  }
 }

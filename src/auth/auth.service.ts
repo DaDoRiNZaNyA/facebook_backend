@@ -71,4 +71,25 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token', error);
     }
   }
+
+  async getProfile(token: string) {
+    try {
+      const decoded = this.jwtService.verify(token);
+
+      const user = await this.usersService.findOne(decoded.sub);
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        lastName: user.lastName,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token', error);
+    }
+  }
 }

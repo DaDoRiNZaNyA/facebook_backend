@@ -105,4 +105,49 @@ export class PostsService {
       },
     });
   }
+
+  async findByUser(params: {
+    page?: number;
+    size?: number;
+    search?: string;
+    userId: number;
+  }) {
+    const { page = 1, size = 10, search = '' } = params;
+    const where: Prisma.PostWhereInput = {
+      AND: [
+        { text: { contains: search, mode: 'insensitive' } },
+        { userId: Number(params.userId) },
+      ],
+    };
+
+    const [posts, total] = await this.prisma.$transaction([
+      this.prisma.post.findMany({
+        skip: (page - 1) * size,
+        take: size,
+        where: where,
+        select: {
+          id: true,
+          text: true,
+          media: true,
+          createdAt: true,
+          updatedAt: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              lastName: true,
+            },
+          },
+        },
+      }),
+      this.prisma.post.count({ where }),
+    ]);
+
+    const pagination = paginate(total, size, page);
+
+    return {
+      pagination,
+      data: posts,
+    };
+  }
 }
