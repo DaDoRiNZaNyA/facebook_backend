@@ -60,6 +60,9 @@ export class PostsService {
         skip: (page - 1) * size,
         take: size,
         where: where,
+        orderBy: {
+          createdAt: 'desc',
+        },
         select: {
           id: true,
           text: true,
@@ -126,6 +129,9 @@ export class PostsService {
         skip: (page - 1) * size,
         take: size,
         where: where,
+        orderBy: {
+          createdAt: 'desc',
+        },
         select: {
           id: true,
           text: true,
