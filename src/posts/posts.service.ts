@@ -41,6 +41,24 @@ export class PostsService {
     });
   }
 
+  async remove(id: string, userId: number) {
+    const post = await this.prisma.post.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    if (post.userId !== userId) {
+      throw new UnauthorizedException(
+        'You are not allowed to delete this post',
+      );
+    }
+
+    return this.prisma.post.delete({ where: { id: Number(id) } });
+  }
+
   async findAll(params: { page?: number; size?: number; search?: string }) {
     const { page = 1, size = 10, search = '' } = params;
     const where: Prisma.PostWhereInput = {

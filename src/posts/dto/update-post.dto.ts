@@ -17,5 +17,5 @@ export class UpdatePostDto {
     example: '/lisk',
     nullable: true,
   })
-  mediaUrl?: string;
+  media?: string;
 }

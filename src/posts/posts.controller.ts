@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   DefaultValuePipe,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -110,7 +111,6 @@ export class PostsController {
   @ApiParam({ name: 'id', description: 'post ID' })
   @ApiResponse({
     status: 200,
-    description: 'Пользователь найден.',
     type: GetPostDto,
   })
   @ApiResponse({ status: 404, description: 'Post not found.' })
@@ -130,5 +130,19 @@ export class PostsController {
   ) {
     const userId = req.user.id;
     return this.postsService.findByUser({ page, size, search, userId });
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete post' })
+  @ApiParam({ name: 'id', description: 'post ID' })
+  @ApiResponse({
+    status: 200,
+    type: GetPostDto,
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: 404, description: 'Post not found.' })
+  remove(@Param('id') id: string, @Req() req) {
+    const userId = req.user.id;
+    return this.postsService.remove(id, userId);
   }
 }
