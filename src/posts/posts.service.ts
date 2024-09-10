@@ -107,14 +107,20 @@ export class PostsService {
               isLike: true,
             },
           },
+          Comment: {
+            select: {
+              id: true,
+            },
+          },
         },
       }),
       this.prisma.post.count({ where }),
     ]);
 
-    const postsWithLikes = posts.map(({ Like, ...post }) => {
+    const postsWithLikes = posts.map(({ Like, Comment, ...post }) => {
       const totalLikes = Like.filter((like) => like.isLike).length;
       const totalDislikes = Like.filter((like) => !like.isLike).length;
+      const totalComments = Comment.length;
 
       const userReaction = authUserId
         ? Like.find((like) => like.userId === authUserId)
@@ -124,6 +130,7 @@ export class PostsService {
         ...post,
         totalLikes,
         totalDislikes,
+        totalComments,
         userReaction: userReaction
           ? userReaction.isLike
             ? 'like'
@@ -141,7 +148,7 @@ export class PostsService {
   }
 
   async findOne(id: number, userId?: number) {
-    const { Like, ...post } = await this.prisma.post.findUnique({
+    const { Like, Comment, ...post } = await this.prisma.post.findUnique({
       where: { id },
       select: {
         id: true,
@@ -162,11 +169,17 @@ export class PostsService {
             isLike: true,
           },
         },
+        Comment: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
     const totalLikes = Like.filter((like) => like.isLike).length;
     const totalDislikes = Like.filter((like) => !like.isLike).length;
+    const totalComments = Comment.length;
 
     const userReaction = userId
       ? Like.find((like) => like.userId === userId)
@@ -176,6 +189,7 @@ export class PostsService {
       ...post,
       totalLikes,
       totalDislikes,
+      totalComments,
       userReaction: userReaction
         ? userReaction.isLike
           ? 'like'
@@ -226,14 +240,20 @@ export class PostsService {
               isLike: true,
             },
           },
+          Comment: {
+            select: {
+              id: true,
+            },
+          },
         },
       }),
       this.prisma.post.count({ where }),
     ]);
 
-    const postsWithLikes = posts.map(({ Like, ...post }) => {
+    const postsWithLikes = posts.map(({ Like, Comment, ...post }) => {
       const totalLikes = Like.filter((like) => like.isLike).length;
       const totalDislikes = Like.filter((like) => !like.isLike).length;
+      const totalComments = Comment.length;
 
       const userReaction = params.userId
         ? Like.find((like) => like.userId === params.userId)
@@ -243,6 +263,7 @@ export class PostsService {
         ...post,
         totalLikes,
         totalDislikes,
+        totalComments,
         userReaction: userReaction
           ? userReaction.isLike
             ? 'like'

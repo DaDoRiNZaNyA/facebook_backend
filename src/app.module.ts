@@ -7,6 +7,7 @@ import { AdminModule } from './admin-panel/admin.module';
 import { PostsModule } from './posts/posts.module';
 import { FollowModule } from './follow/follow.module';
 import { LikesModule } from './likes/likes.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { LikesModule } from './likes/likes.module';
     PostsModule,
     FollowModule,
     LikesModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

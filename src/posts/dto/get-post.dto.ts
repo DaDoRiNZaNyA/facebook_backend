@@ -71,6 +71,12 @@ export class GetPostDto {
   totalDislikes: number;
 
   @ApiProperty({
+    description: 'totalComments',
+    example: 1,
+  })
+  totalComments: number;
+
+  @ApiProperty({
     description: 'userReaction',
     example: 'like',
   })

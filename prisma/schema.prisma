@@ -8,28 +8,30 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
   password  String
   name      String?
   lastName  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  following Follow[] @relation("Following")
-  followers Follow[] @relation("Followers")
-  posts     Post[]   @relation("UserPosts")
-  Like      Like[]   @relation("UserLikes")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  following Follow[]  @relation("Following")
+  followers Follow[]  @relation("Followers")
+  posts     Post[]    @relation("UserPosts")
+  Like      Like[]    @relation("UserLikes")
+  Comment   Comment[] @relation("UserComments")
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   userId    Int
   text      String
   media     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation("UserPosts", fields: [userId], references: [id])
-  Like      Like[]   @relation("PostLikes")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation("UserPosts", fields: [userId], references: [id])
+  Like      Like[]    @relation("PostLikes")
+  Comment   Comment[] @relation("PostComments")
 }
 
 model Follow {
@@ -54,4 +56,21 @@ model Like {
   post Post @relation("PostLikes", fields: [postId], references: [id])
 
   @@unique([userId, postId])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  parentId  Int?
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User      @relation("UserComments", fields: [userId], references: [id])
+  post    Post      @relation("PostComments", fields: [postId], references: [id])
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies Comment[] @relation("CommentReplies")
+
+  @@index([parentId])
 }
