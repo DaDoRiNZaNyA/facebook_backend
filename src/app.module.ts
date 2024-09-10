@@ -6,9 +6,17 @@ import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin-panel/admin.module';
 import { PostsModule } from './posts/posts.module';
 import { FollowModule } from './follow/follow.module';
+import { LikesModule } from './likes/likes.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, AdminModule, PostsModule, FollowModule],
+  imports: [
+    UsersModule,
+    AuthModule,
+    AdminModule,
+    PostsModule,
+    FollowModule,
+    LikesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

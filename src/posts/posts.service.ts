@@ -64,8 +64,9 @@ export class PostsService {
     size?: number;
     search?: string;
     userId?: number;
+    authUserId?: number;
   }) {
-    const { page = 1, size = 10, search = '', userId } = params;
+    const { page = 1, size = 10, search = '', userId, authUserId } = params;
     const where: Prisma.PostWhereInput = {
       AND: [
         {
@@ -100,21 +101,47 @@ export class PostsService {
               lastName: true,
             },
           },
+          Like: {
+            select: {
+              userId: true,
+              isLike: true,
+            },
+          },
         },
       }),
       this.prisma.post.count({ where }),
     ]);
 
+    const postsWithLikes = posts.map(({ Like, ...post }) => {
+      const totalLikes = Like.filter((like) => like.isLike).length;
+      const totalDislikes = Like.filter((like) => !like.isLike).length;
+
+      const userReaction = authUserId
+        ? Like.find((like) => like.userId === authUserId)
+        : null;
+
+      return {
+        ...post,
+        totalLikes,
+        totalDislikes,
+        userReaction: userReaction
+          ? userReaction.isLike
+            ? 'like'
+            : 'dislike'
+          : null,
+      };
+    });
+
     const pagination = paginate(total, size, page);
 
     return {
       pagination,
-      data: posts,
+      data: postsWithLikes,
     };
   }
 
-  async findOne(id: number) {
-    return this.prisma.post.findUnique({
+  async findOne(id: number, userId?: number) {
+    const { Like, ...post } = await this.prisma.post.findUnique({
       where: { id },
       select: {
         id: true,
@@ -129,8 +156,32 @@ export class PostsService {
             lastName: true,
           },
         },
+        Like: {
+          select: {
+            userId: true,
+            isLike: true,
+          },
+        },
       },
     });
+
+    const totalLikes = Like.filter((like) => like.isLike).length;
+    const totalDislikes = Like.filter((like) => !like.isLike).length;
+
+    const userReaction = userId
+      ? Like.find((like) => like.userId === userId)
+      : null;
+
+    return {
+      ...post,
+      totalLikes,
+      totalDislikes,
+      userReaction: userReaction
+        ? userReaction.isLike
+          ? 'like'
+          : 'dislike'
+        : null,
+    };
   }
 
   async findByUser(params: {
@@ -169,16 +220,42 @@ export class PostsService {
               lastName: true,
             },
           },
+          Like: {
+            select: {
+              userId: true,
+              isLike: true,
+            },
+          },
         },
       }),
       this.prisma.post.count({ where }),
     ]);
 
+    const postsWithLikes = posts.map(({ Like, ...post }) => {
+      const totalLikes = Like.filter((like) => like.isLike).length;
+      const totalDislikes = Like.filter((like) => !like.isLike).length;
+
+      const userReaction = params.userId
+        ? Like.find((like) => like.userId === params.userId)
+        : null;
+
+      return {
+        ...post,
+        totalLikes,
+        totalDislikes,
+        userReaction: userReaction
+          ? userReaction.isLike
+            ? 'like'
+            : 'dislike'
+          : null,
+      };
+    });
+
     const pagination = paginate(total, size, page);
 
     return {
       pagination,
-      data: posts,
+      data: postsWithLikes,
     };
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Follow } from '@prisma/client';
+import { Follow, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
+import { paginate } from 'src/utils/pagination';
 
 @Injectable()
 export class FollowService {
@@ -50,12 +51,66 @@ export class FollowService {
     });
   }
 
-  async getFollowers(userId: number): Promise<Follow[]> {
-    return this.prisma.follow.findMany({
-      where: { followingId: userId },
-      include: {
-        follower: true,
+  async getFollowers(userId: number, page: number, size: number) {
+    const where: Prisma.FollowWhereInput = {
+      followingId: userId,
+    };
+
+    const [follows, total] = await this.prisma.$transaction([
+      this.prisma.follow.findMany({
+        skip: (page - 1) * size,
+        take: size,
+        where: where,
+        include: {
+          follower: {
+            select: {
+              id: true,
+              name: true,
+              lastName: true,
+              followers: {
+                select: {
+                  followerId: true,
+                },
+                where: {
+                  followerId: userId,
+                },
+              },
+            },
+          },
+        },
+      }),
+      this.prisma.follow.count({ where }),
+    ]);
+
+    const followsWithFollowStatus = follows.map((data) => ({
+      id: data.id,
+      followerId: data.followerId,
+      followingId: data.followingId,
+      isFollowed: data.follower.followers.length > 0,
+      follower: {
+        name: data.follower.name,
+        lastName: data.follower.lastName,
+        id: data.follower.id,
+      },
+    }));
+
+    const pagination = paginate(total, size, page);
+    return { pagination, data: followsWithFollowStatus };
+  }
+
+  async isUserFollowed(
+    followerId: number,
+    followingId: number,
+  ): Promise<{ isFollowed: boolean }> {
+    const followRecord = await this.prisma.follow.findFirst({
+      where: {
+        followerId: followerId,
+        followingId: followingId,
       },
     });
+
+    return {
+      isFollowed: !!followRecord,
+    };
   }
 }

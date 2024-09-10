@@ -57,4 +57,22 @@ export class GetPostDto {
     example: '2024-09-03T05:17:30.367Z',
   })
   updatedAt: string;
+
+  @ApiProperty({
+    description: 'totalLikes',
+    example: 1,
+  })
+  totalLikes: number;
+
+  @ApiProperty({
+    description: 'totalDislikes',
+    example: 1,
+  })
+  totalDislikes: number;
+
+  @ApiProperty({
+    description: 'userReaction',
+    example: 'like',
+  })
+  userReaction: string | null;
 }

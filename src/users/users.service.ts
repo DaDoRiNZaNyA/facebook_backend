@@ -96,7 +96,6 @@ export class UsersService {
     lastName?: string;
     email: string;
   }) {
-    console.log({ id, name, lastName, email });
     return this.prisma.user.update({
       where: { id },
       data: { name, lastName, email },

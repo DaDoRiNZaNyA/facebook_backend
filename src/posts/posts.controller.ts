@@ -25,6 +25,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { GetPostDto } from './dto/get-post.dto';
 import { ApiOkResponsePaginated } from 'src/utils/ApiOkResponsePaginated';
+import { OptionalJwtAuthGuard } from 'src/utils/OptionalJwtAuthGuard';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -98,13 +99,22 @@ export class PostsController {
   @Get()
   @ApiOperation({ summary: 'Get posts' })
   @ApiOkResponsePaginated(GetPostDto)
+  @UseGuards(OptionalJwtAuthGuard)
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('size', new DefaultValuePipe(10), ParseIntPipe) size: number = 10,
     @Query('search') search: string = '',
     @Query('userId') userId?: number,
+    @Req() req?: any,
   ) {
-    return this.postsService.findAll({ page, size, search, userId });
+    const authUserId = req.user?.id;
+    return this.postsService.findAll({
+      page,
+      size,
+      search,
+      userId,
+      authUserId,
+    });
   }
 
   @Get('post/:id')
@@ -115,8 +125,10 @@ export class PostsController {
     type: GetPostDto,
   })
   @ApiResponse({ status: 404, description: 'Post not found.' })
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(+id);
+  @UseGuards(OptionalJwtAuthGuard)
+  findOne(@Param('id') id: string, @Req() req?: any) {
+    const userId = req.user?.id;
+    return this.postsService.findOne(+id, userId);
   }
 
   @Get('my')
