@@ -34,4 +34,10 @@ export class GetUserDto {
     example: '2024-09-03T05:17:30.367Z',
   })
   updatedAt: string;
+
+  @ApiProperty({
+    description: 'Is user followed',
+    example: false,
+  })
+  isFollowed: boolean;
 }

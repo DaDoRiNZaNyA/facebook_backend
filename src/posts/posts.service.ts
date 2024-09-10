@@ -59,8 +59,13 @@ export class PostsService {
     return this.prisma.post.delete({ where: { id: Number(id) } });
   }
 
-  async findAll(params: { page?: number; size?: number; search?: string }) {
-    const { page = 1, size = 10, search = '' } = params;
+  async findAll(params: {
+    page?: number;
+    size?: number;
+    search?: string;
+    userId?: number;
+  }) {
+    const { page = 1, size = 10, search = '', userId } = params;
     const where: Prisma.PostWhereInput = {
       AND: [
         {
@@ -70,6 +75,7 @@ export class PostsService {
             { user: { lastName: { contains: search, mode: 'insensitive' } } },
           ],
         },
+        userId ? { userId: Number(params.userId) } : {},
       ],
     };
 

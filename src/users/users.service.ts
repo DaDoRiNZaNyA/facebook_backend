@@ -14,7 +14,12 @@ export class UsersService {
     });
   }
 
-  async findAll(params: { page?: number; size?: number; search?: string }) {
+  async findAll(params: {
+    page?: number;
+    size?: number;
+    search?: string;
+    userId: number;
+  }) {
     const { page = 1, size = 10, search = '' } = params;
     const where: Prisma.UserWhereInput = {
       AND: [
@@ -25,6 +30,7 @@ export class UsersService {
             { email: { contains: search, mode: 'insensitive' } },
           ],
         },
+        { id: { not: params.userId } },
       ],
     };
 
@@ -38,16 +44,28 @@ export class UsersService {
           email: true,
           name: true,
           lastName: true,
+          followers: {
+            select: {
+              followerId: true,
+            },
+          },
         },
       }),
       this.prisma.user.count({ where }),
     ]);
 
+    const usersWithFollowStatus = users.map(({ followers, ...user }) => ({
+      ...user,
+      isFollowed: followers.some(
+        (follower) => follower.followerId === params.userId,
+      ),
+    }));
+
     const pagination = paginate(total, size, page);
 
     return {
       pagination,
-      data: users,
+      data: usersWithFollowStatus,
     };
   }
 

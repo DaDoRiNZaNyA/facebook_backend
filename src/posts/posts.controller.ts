@@ -102,8 +102,9 @@ export class PostsController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('size', new DefaultValuePipe(10), ParseIntPipe) size: number = 10,
     @Query('search') search: string = '',
+    @Query('userId') userId?: number,
   ) {
-    return this.postsService.findAll({ page, size, search });
+    return this.postsService.findAll({ page, size, search, userId });
   }
 
   @Get('post/:id')

@@ -5,12 +5,15 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { CreateUserDto } from './dto/create-user.dto.js';
-import { UsersService } from './users.service.js';
-import { GetUserDto } from './dto/get-user-dto.js';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UsersService } from './users.service';
+import { GetUserDto } from './dto/get-user-dto';
 import { ApiOkResponsePaginated } from 'src/utils/ApiOkResponsePaginated';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -20,12 +23,15 @@ export class UsersController {
   @Get()
   @ApiOperation({ summary: 'Get users' })
   @ApiOkResponsePaginated(GetUserDto)
+  @UseGuards(JwtAuthGuard)
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('size', new DefaultValuePipe(10), ParseIntPipe) size: number = 10,
     @Query('search') search: string = '',
+    @Req() req,
   ) {
-    return this.usersService.findAll({ page, size, search });
+    const userId = req.user.id;
+    return this.usersService.findAll({ page, size, search, userId });
   }
 
   @Get(':id')
