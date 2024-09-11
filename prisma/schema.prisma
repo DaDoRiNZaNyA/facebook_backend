@@ -27,12 +27,12 @@ model Post {
   id        Int       @id @default(autoincrement())
   userId    Int
   text      String
-  media     String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   user      User      @relation("UserPosts", fields: [userId], references: [id])
   Like      Like[]    @relation("PostLikes")
   Comment   Comment[] @relation("PostComments")
+  media     Media[]   @relation("PostMedia")
 }
 
 model Follow {
@@ -74,4 +74,13 @@ model Comment {
   replies Comment[] @relation("CommentReplies")
 
   @@index([parentId])
+}
+
+model Media {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  url       String
+  type      String
+  createdAt DateTime @default(now())
+  post      Post     @relation("PostMedia", fields: [postId], references: [id])
 }

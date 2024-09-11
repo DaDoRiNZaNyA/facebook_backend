@@ -9,13 +9,4 @@ export class UpdatePostDto {
     example: 'qweqwe',
   })
   text?: string;
-
-  @IsOptional()
-  @IsString()
-  @ApiProperty({
-    description: 'The media URL or path',
-    example: '/lisk',
-    nullable: true,
-  })
-  media?: string;
 }

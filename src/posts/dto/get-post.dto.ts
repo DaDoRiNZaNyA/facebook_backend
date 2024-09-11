@@ -48,10 +48,18 @@ export class GetPostDto {
 
   @ApiProperty({
     description: 'Media URL or path',
-    example: '/media/sample.jpg',
+    example: [
+      {
+        id: 4,
+        postId: 20,
+        url: '/uploads/posts/post-1726036969254-227617590.jpeg',
+        type: 'image/jpeg',
+        createdAt: '2024-09-11T06:42:49.258Z',
+      },
+    ],
     nullable: true,
   })
-  media: string | null;
+  media: any[];
 
   @ApiProperty({
     description: 'Creation date of the post',

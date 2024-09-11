@@ -8,16 +8,148 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Prisma } from '@prisma/client';
 import { paginate } from 'src/utils/pagination';
+import { extname, join } from 'path';
+import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'fs';
 
 @Injectable()
 export class PostsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createPostDto: CreatePostDto, userId: number) {
-    return this.prisma.post.create({
-      data: {
-        ...createPostDto,
-        userId: userId,
+  async create(
+    createPostDto: CreatePostDto,
+    media: Array<Express.Multer.File>,
+    userId: number,
+  ) {
+    const { text } = createPostDto;
+
+    const uploadDir = join(__dirname, '../../uploads/posts');
+    if (!existsSync(uploadDir)) {
+      mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const mediaRecords = media.map((file) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const ext = extname(file.originalname);
+      const filename = `post-${uniqueSuffix}${ext}`;
+      const filePath = join(uploadDir, filename);
+
+      writeFileSync(filePath, file.buffer);
+
+      const relativeUrl = `/uploads/posts/${filename}`;
+
+      return {
+        url: relativeUrl,
+        type: file.mimetype,
+      };
+    });
+
+    return this.prisma.$transaction(async (prisma) => {
+      const post = await prisma.post.create({
+        data: {
+          text,
+          userId,
+        },
+      });
+
+      const mediaPromises = mediaRecords.map((record) =>
+        prisma.media.create({
+          data: {
+            postId: post.id,
+            url: record.url,
+            type: record.type,
+          },
+        }),
+      );
+
+      await Promise.all(mediaPromises);
+
+      return post;
+    });
+  }
+
+  async addMediaToPost(
+    postId: number,
+    files: Array<Express.Multer.File>,
+    userId: number,
+  ) {
+    const post = await this.prisma.post.findUnique({
+      where: { id: Number(postId) },
+    });
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    if (post.userId !== userId) {
+      throw new UnauthorizedException('You are not allowed to edit this post');
+    }
+
+    const uploadDir = join(__dirname, '../../uploads/posts');
+
+    const mediaRecords = files.map((file) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const ext = extname(file.originalname);
+      const filename = `post-${uniqueSuffix}${ext}`;
+      const filePath = join(uploadDir, filename);
+
+      writeFileSync(filePath, file.buffer);
+
+      const relativeUrl = `/uploads/posts/${filename}`;
+
+      return {
+        url: relativeUrl,
+        type: file.mimetype,
+      };
+    });
+
+    const mediaPromises = mediaRecords.map((record) =>
+      this.prisma.media.create({
+        data: {
+          postId,
+          url: record.url,
+          type: record.type,
+        },
+      }),
+    );
+
+    await Promise.all(mediaPromises);
+  }
+
+  async removeMediaFromPost(
+    postId: number,
+    mediaIds: number[],
+    userId: number,
+  ) {
+    const post = await this.prisma.post.findUnique({
+      where: { id: Number(postId) },
+    });
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    if (post.userId !== userId) {
+      throw new UnauthorizedException('You are not allowed to edit this post');
+    }
+
+    const mediaRecords = await this.prisma.media.findMany({
+      where: {
+        id: { in: mediaIds },
+      },
+    });
+
+    mediaRecords.forEach((record) => {
+      const filePath = join(
+        __dirname,
+        '../../uploads/posts',
+        record.url.replace('/uploads/posts/', ''),
+      );
+      unlinkSync(filePath);
+    });
+
+    await this.prisma.media.deleteMany({
+      where: {
+        id: { in: mediaIds },
       },
     });
   }
@@ -44,6 +176,7 @@ export class PostsService {
   async remove(id: string, userId: number) {
     const post = await this.prisma.post.findUnique({
       where: { id: Number(id) },
+      include: { media: true },
     });
 
     if (!post) {
@@ -55,6 +188,23 @@ export class PostsService {
         'You are not allowed to delete this post',
       );
     }
+
+    const uploadDir = join(__dirname, '../../uploads/posts');
+    post.media.forEach((media) => {
+      const filePath = join(
+        uploadDir,
+        media.url.replace('/uploads/posts/', ''),
+      );
+      try {
+        unlinkSync(filePath);
+      } catch (err) {
+        console.error(`Failed to delete file at ${filePath}:`, err);
+      }
+    });
+
+    await this.prisma.media.deleteMany({
+      where: { postId: Number(id) },
+    });
 
     return this.prisma.post.delete({ where: { id: Number(id) } });
   }

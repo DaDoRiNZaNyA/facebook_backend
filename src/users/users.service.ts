@@ -3,6 +3,8 @@ import { Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { paginate } from 'src/utils/pagination';
+import { join } from 'path';
+import { unlinkSync } from 'fs';
 
 @Injectable()
 export class UsersService {
@@ -110,6 +112,19 @@ export class UsersService {
 
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    if (user.avatar) {
+      const oldAvatarPath = join(
+        __dirname,
+        '../../uploads/avatars',
+        user.avatar,
+      );
+      try {
+        unlinkSync(oldAvatarPath);
+      } catch (err) {
+        console.error(`Failed to delete old avatar at ${oldAvatarPath}:`, err);
+      }
     }
 
     return this.prisma.user.update({

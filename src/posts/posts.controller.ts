@@ -10,22 +10,27 @@ import {
   Put,
   Query,
   Req,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
-  ApiBody,
   ApiParam,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { GetPostDto } from './dto/get-post.dto';
 import { ApiOkResponsePaginated } from 'src/utils/ApiOkResponsePaginated';
 import { OptionalJwtAuthGuard } from 'src/utils/OptionalJwtAuthGuard';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { CreatePostDto } from './dto/create-post.dto';
+import { AddMediaDto } from './dto/add-media.dto';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -34,10 +39,6 @@ export class PostsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new post' })
-  @ApiBody({
-    description: 'The data needed to create a new post',
-    type: CreatePostDto,
-  })
   @ApiResponse({
     status: 201,
     description: 'Post successfully created',
@@ -52,14 +53,23 @@ export class PostsController {
       },
     },
   })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: CreatePostDto,
+  })
   @ApiResponse({
     status: 401,
     description: 'Unauthorized',
   })
   @UseGuards(JwtAuthGuard)
-  async create(@Body() createPostDto: CreatePostDto, @Req() req) {
+  @UseInterceptors(FilesInterceptor('media'))
+  async create(
+    @Body() body,
+    @UploadedFiles() media: Array<Express.Multer.File>,
+    @Req() req,
+  ) {
     const userId = req.user.id;
-    return this.postsService.create(createPostDto, userId);
+    return this.postsService.create(body, media, userId);
   }
 
   @Put(':id')
@@ -157,5 +167,43 @@ export class PostsController {
   remove(@Param('id') id: string, @Req() req) {
     const userId = req.user.id;
     return this.postsService.remove(id, userId);
+  }
+
+  @Post(':postId/media')
+  @ApiOperation({ summary: 'Add media files to a post' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: AddMediaDto,
+  })
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FilesInterceptor('media'))
+  async addMedia(
+    @Param('postId') postId: number,
+    @UploadedFiles() media: Array<Express.Multer.File>,
+    @Req() req,
+  ) {
+    const userId = req.user.id;
+    return this.postsService.addMediaToPost(postId, media, userId);
+  }
+
+  @Delete(':postId/media')
+  @ApiOperation({ summary: 'Remove media files from a post' })
+  @ApiResponse({
+    status: 200,
+    description: 'Media files successfully removed from the post',
+  })
+  @ApiBody({
+    schema: {
+      example: { mediaIds: [1, 2, 3] },
+    },
+  })
+  @UseGuards(JwtAuthGuard)
+  async removeMedia(
+    @Param('postId') postId: number,
+    @Body() body: { mediaIds: number[] },
+    @Req() req,
+  ) {
+    const userId = req.user.id;
+    return this.postsService.removeMediaFromPost(postId, body.mediaIds, userId);
   }
 }
