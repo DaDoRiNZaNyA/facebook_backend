@@ -18,6 +18,13 @@ class UserDto {
     example: 'Doe',
   })
   lastName: string;
+
+  @ApiProperty({
+    example: '/uploads/avatars/avatar-1726031224516-565290115.jpeg',
+    description: 'avatar',
+    required: false,
+  })
+  avatar?: string;
 }
 
 export class GetPostDto {

@@ -99,6 +99,7 @@ export class PostsService {
               id: true,
               name: true,
               lastName: true,
+              avatar: true,
             },
           },
           Like: {
@@ -161,6 +162,7 @@ export class PostsService {
             id: true,
             name: true,
             lastName: true,
+            avatar: true,
           },
         },
         Like: {
@@ -232,6 +234,7 @@ export class PostsService {
               id: true,
               name: true,
               lastName: true,
+              avatar: true,
             },
           },
           Like: {

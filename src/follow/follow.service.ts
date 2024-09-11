@@ -67,6 +67,7 @@ export class FollowService {
               id: true,
               name: true,
               lastName: true,
+              avatar: true,
               followers: {
                 select: {
                   followerId: true,
@@ -91,6 +92,7 @@ export class FollowService {
         name: data.follower.name,
         lastName: data.follower.lastName,
         id: data.follower.id,
+        avatar: data.follower.avatar,
       },
     }));
 

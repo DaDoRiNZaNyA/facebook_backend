@@ -24,6 +24,13 @@ export class GetUserDto {
   name?: string;
 
   @ApiProperty({
+    example: '/uploads/avatars/avatar-1726031224516-565290115.jpeg',
+    description: 'avatar',
+    required: false,
+  })
+  avatar?: string;
+
+  @ApiProperty({
     description: 'Creation date',
     example: '2024-09-03T05:17:30.367Z',
   })

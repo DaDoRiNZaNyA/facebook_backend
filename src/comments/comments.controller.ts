@@ -109,6 +109,7 @@ export class CommentsController {
                   '$2b$10$XegE7Whprbyiq4wTgyNN9uguOMgBcQw3sE4x0x9fKy0ddvtijHtt6',
                 name: 'John123',
                 lastName: 'Doe',
+                avatar: '/uploads/avatars/avatar-1726031224516-565290115.jpeg',
                 createdAt: '2024-09-02T07:01:47.724Z',
                 updatedAt: '2024-09-02T07:01:47.724Z',
               },
@@ -135,6 +136,7 @@ export class CommentsController {
             password:
               '$2b$10$XegE7Whprbyiq4wTgyNN9uguOMgBcQw3sE4x0x9fKy0ddvtijHtt6',
             name: 'John123',
+            avatar: '/uploads/avatars/avatar-1726031224516-565290115.jpeg',
             lastName: 'Doe',
             createdAt: '2024-09-02T07:01:47.724Z',
             updatedAt: '2024-09-02T07:01:47.724Z',

@@ -104,6 +104,7 @@ export class AuthController {
         email: 'pJn9Z@example.com',
         name: 'John',
         lastName: 'Doe',
+        avatar: '/uploads/avatars/avatar-1726031224516-565290115.jpeg',
       },
     },
   })

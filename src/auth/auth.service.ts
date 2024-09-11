@@ -87,6 +87,7 @@ export class AuthService {
         email: user.email,
         name: user.name,
         lastName: user.lastName,
+        avatar: user.avatar,
       };
     } catch (error) {
       throw new UnauthorizedException('Invalid token', error);

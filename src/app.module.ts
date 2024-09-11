@@ -8,9 +8,16 @@ import { PostsModule } from './posts/posts.module';
 import { FollowModule } from './follow/follow.module';
 import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+      exclude: ['/uploads/*'],
+    }),
     UsersModule,
     AuthModule,
     AdminModule,
