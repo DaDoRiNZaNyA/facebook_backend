@@ -1,5 +1,5 @@
 AdminJS.UserComponents = {}
-import Dashboard from '../src/admin-panel/components/dashboard'
+import Dashboard from '../dist/admin-panel/components/dashboard'
 AdminJS.UserComponents.Dashboard = Dashboard
-import UserPostsList from '../src/admin-panel/components/UserPostsList'
+import UserPostsList from '../dist/admin-panel/components/UserPostsList'
 AdminJS.UserComponents.UserPostsList = UserPostsList

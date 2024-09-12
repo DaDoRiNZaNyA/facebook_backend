@@ -12,7 +12,7 @@ export const AdminModule = (async () => {
   const loader = new ComponentLoader();
   const prismaService = new PrismaService();
   const Components = {
-    Dashboard: loader.add('Dashboard', './components/dashboard.tsx'),
+    Dashboard: loader.add('Dashboard', './components/dashboard'),
   };
 
   return AdminModule.createAdminAsync({
@@ -39,7 +39,7 @@ export const AdminModule = (async () => {
                   components: {
                     show: loader.add(
                       'UserPostsList',
-                      './components/UserPostsList.tsx',
+                      './components/UserPostsList',
                     ),
                   },
                   position: 110,
