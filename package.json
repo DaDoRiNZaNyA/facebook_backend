@@ -10,6 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "dev": "nest start --watch",
+    
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "build:start": "npm run build && npm run start",
@@ -35,6 +36,7 @@
     "@nestjs/swagger": "^7.4.0",
     "@nestjs/websockets": "^10.4.1",
     "@prisma/client": "^5.19.0",
+    "@rollup/rollup-linux-x64-gnu": "^4.21.3",
     "adminjs": "^7.8.12",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
@@ -97,7 +99,7 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
-  "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.21.3"
+  "resolutions": {
+    "rollup": "npm:@rollup/wasm-node"
   }
 }
