@@ -8,19 +8,21 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  password  String
-  name      String?
-  lastName  String?
-  avatar    String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  following Follow[]  @relation("Following")
-  followers Follow[]  @relation("Followers")
-  posts     Post[]    @relation("UserPosts")
-  Like      Like[]    @relation("UserLikes")
-  Comment   Comment[] @relation("UserComments")
+  id               Int               @id @default(autoincrement())
+  email            String            @unique
+  password         String
+  name             String?
+  lastName         String?
+  avatar           String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  following        Follow[]          @relation("Following")
+  followers        Follow[]          @relation("Followers")
+  posts            Post[]            @relation("UserPosts")
+  Like             Like[]            @relation("UserLikes")
+  Comment          Comment[]         @relation("UserComments")
+  chatParticipants ChatParticipant[] @relation("UserChatParticipants")
+  sentMessages     Message[]         @relation("UserSentMessages")
 }
 
 model Post {
@@ -83,4 +85,38 @@ model Media {
   type      String
   createdAt DateTime @default(now())
   post      Post     @relation("PostMedia", fields: [postId], references: [id])
+}
+
+model ChatGroup {
+  id           Int               @id @default(autoincrement())
+  name         String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  messages     Message[]         @relation("ChatGroupMessages")
+  participants ChatParticipant[] @relation("ChatParticipants")
+}
+
+model ChatParticipant {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  chatGroupId Int
+  isAdmin     Boolean   @default(false)
+  lastReadAt  DateTime?
+
+  user      User      @relation("UserChatParticipants", fields: [userId], references: [id])
+  chatGroup ChatGroup @relation("ChatParticipants", fields: [chatGroupId], references: [id])
+
+  @@unique([userId, chatGroupId])
+}
+
+model Message {
+  id          Int      @id @default(autoincrement())
+  chatGroupId Int
+  senderId    Int
+  content     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  chatGroup ChatGroup @relation("ChatGroupMessages", fields: [chatGroupId], references: [id])
+  sender    User      @relation("UserSentMessages", fields: [senderId], references: [id])
 }

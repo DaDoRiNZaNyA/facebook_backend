@@ -10,6 +10,7 @@ import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { join } from 'path';
     FollowModule,
     LikesModule,
     CommentsModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
