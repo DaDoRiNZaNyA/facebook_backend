@@ -75,6 +75,12 @@ export const AdminModule = (async () => {
               },
             },
           },
+          {
+            resource: {
+              model: getModelByName('Comment'),
+              client: prismaService,
+            },
+          },
         ],
         branding: {
           companyName: 'My Company',

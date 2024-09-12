@@ -17,18 +17,20 @@ import {
 const UserPostsList: React.FC<any> = (props) => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<any[]>([]);
+  const [total, setTotal] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [postsPage, setPostsPage] = useState<number>(1);
-
+  console.log(props.record.params.id);
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          `/admin/api/resources/Post/actions/list/?page=${postsPage}&filter.user=${props.record.params.id}/records`,
+          `/admin/api/resources/Post/actions/list/?page=${postsPage}&filters.user=${props.record.params.id}`,
         );
         setPosts(response.data.records);
+        setTotal(response.data.meta.total);
       } catch (error) {
         setError('Error fetching posts.');
         console.error('Error fetching posts:', error);
@@ -78,7 +80,7 @@ const UserPostsList: React.FC<any> = (props) => {
         <Pagination
           page={postsPage}
           onChange={(value) => setPostsPage(value)}
-          total={11}
+          total={total}
           perPage={10}
         />
       </Text>
