@@ -1,0 +1,1 @@
+{"version":3,"file":"edit-comment.dto.js","sourceRoot":"","sources":["../../../src/comments/dto/edit-comment.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,6CAA8C;AAC9C,qDAA2C;AAE3C,MAAa,cAAc;CAO1B;AAPD,wCAOC;AADC;IALC,IAAA,qBAAW,EAAC;QACX,WAAW,EAAE,mBAAmB;QAChC,OAAO,EAAE,iBAAiB;KAC3B,CAAC;IACD,IAAA,0BAAQ,GAAE;;4CACE"}
