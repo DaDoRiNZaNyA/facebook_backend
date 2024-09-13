@@ -12,10 +12,13 @@ export const AdminModule = (async () => {
   const loader = new ComponentLoader();
   const prismaService = new PrismaService();
   const Components = {
-    Dashboard: loader.add('Dashboard', '../admin-panel/components/Dashboard'),
+    Dashboard: loader.add(
+      'Dashboard',
+      '../../src/admin-panel/components/Dashboard',
+    ),
     UserPostsList: loader.add(
       'UserPostsList',
-      '../admin-panel/components/UserPostsList',
+      '../../src/admin-panel/components/UserPostsList',
     ),
   };
 
