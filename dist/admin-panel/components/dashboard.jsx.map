@@ -1,1 +1,1 @@
-{"version":3,"file":"dashboard.jsx","sourceRoot":"","sources":["../../../src/admin-panel/components/dashboard.tsx"],"names":[],"mappings":";;;;;AAAA,kDAA0B;AAE1B,MAAM,SAAS,GAAG,GAAG,EAAE;IACrB,OAAO,CAAC,GAAG,CAAC,EAAE,GAAG,CAAC,CAAC;AACrB,CAAC,CAAC;AAEF,kBAAe,SAAS,CAAC"}
+{"version":3,"file":"Dashboard.jsx","sourceRoot":"","sources":["../../../src/admin-panel/components/Dashboard.tsx"],"names":[],"mappings":";;;;;AAAA,kDAA0B;AAE1B,MAAM,SAAS,GAAG,GAAG,EAAE;IACrB,OAAO,CAAC,GAAG,CAAC,EAAE,GAAG,CAAC,CAAC;AACrB,CAAC,CAAC;AAEF,kBAAe,SAAS,CAAC"}

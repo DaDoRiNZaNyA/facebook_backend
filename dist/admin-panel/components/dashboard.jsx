@@ -8,4 +8,4 @@ const Dashboard = () => {
     return <div></div>;
 };
 exports.default = Dashboard;
-//# sourceMappingURL=dashboard.jsx.map
+//# sourceMappingURL=Dashboard.jsx.map
