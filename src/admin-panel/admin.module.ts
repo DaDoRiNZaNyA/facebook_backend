@@ -14,11 +14,11 @@ export const AdminModule = (async () => {
   const Components = {
     Dashboard: loader.add(
       'Dashboard',
-      '../../src/admin-panel/components/Dashboard',
+      '../src/admin-panel/components/Dashboard',
     ),
     UserPostsList: loader.add(
       'UserPostsList',
-      '../../src/admin-panel/components/UserPostsList',
+      '../src/admin-panel/components/UserPostsList',
     ),
   };
 
