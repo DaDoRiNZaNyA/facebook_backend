@@ -16,7 +16,13 @@ exports.AdminModule = (() => __awaiter(void 0, void 0, void 0, function* () {
     const { Database, Resource, getModelByName } = yield import('@adminjs/prisma');
     const AdminJS = (yield import('adminjs')).default;
     AdminJS.registerAdapter({ Database, Resource });
+    const { ComponentLoader } = yield import('adminjs');
+    const loader = new ComponentLoader();
     const prismaService = new prisma_service_1.PrismaService();
+    const Components = {
+        Dashboard: loader.add('Dashboard', '../../src/admin-panel/components/Dashboard'),
+        UserPostsList: loader.add('UserPostsList', '../../src/admin-panel/components/UserPostsList'),
+    };
     return AdminModule.createAdminAsync({
         useFactory: () => ({
             adminJsOptions: {
@@ -36,6 +42,12 @@ exports.AdminModule = (() => __awaiter(void 0, void 0, void 0, function* () {
                                         edit: false,
                                         filter: false,
                                     },
+                                },
+                                posts: {
+                                    components: {
+                                        show: Components.UserPostsList,
+                                    },
+                                    position: 110,
                                 },
                             },
                             actions: {
@@ -78,6 +90,10 @@ exports.AdminModule = (() => __awaiter(void 0, void 0, void 0, function* () {
                 branding: {
                     companyName: 'My Company',
                     softwareBrothers: false,
+                },
+                componentLoader: loader,
+                dashboard: {
+                    component: Components.Dashboard,
                 },
             },
         }),

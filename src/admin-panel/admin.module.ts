@@ -7,13 +7,20 @@ export const AdminModule = (async () => {
   );
   const AdminJS = (await import('adminjs')).default;
   AdminJS.registerAdapter({ Database, Resource });
-  // const { ComponentLoader } = await import('adminjs');
+  const { ComponentLoader } = await import('adminjs');
 
-  // const loader = new ComponentLoader();
+  const loader = new ComponentLoader();
   const prismaService = new PrismaService();
-  // const Components = {
-  //   Dashboard: loader.add('Dashboard', './components/Dashboard'),
-  // };
+  const Components = {
+    Dashboard: loader.add(
+      'Dashboard',
+      '../../src/admin-panel/components/Dashboard',
+    ),
+    UserPostsList: loader.add(
+      'UserPostsList',
+      '../../src/admin-panel/components/UserPostsList',
+    ),
+  };
 
   return AdminModule.createAdminAsync({
     useFactory: () => ({
@@ -35,15 +42,12 @@ export const AdminModule = (async () => {
                     filter: false,
                   },
                 },
-                // posts: {
-                //   components: {
-                //     show: loader.add(
-                //       'UserPostsList',
-                //       './components/UserPostsList',
-                //     ),
-                //   },
-                //   position: 110,
-                // },
+                posts: {
+                  components: {
+                    show: Components.UserPostsList,
+                  },
+                  position: 110,
+                },
               },
               actions: {
                 new: {
@@ -86,10 +90,10 @@ export const AdminModule = (async () => {
           companyName: 'My Company',
           softwareBrothers: false,
         },
-        // componentLoader: loader,
-        // dashboard: {
-        //   component: Components.Dashboard,
-        // },
+        componentLoader: loader,
+        dashboard: {
+          component: Components.Dashboard,
+        },
       },
     }),
   });
